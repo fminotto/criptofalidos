@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Data_Execucao__c</fullName>
+    <description>Date the order was executed</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Date the order was executed</inlineHelpText>
+    <label>Data Execução</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Buy</fullName>
+    <active>true</active>
+    <description>Purchase-type operation where the primary asset is acquired</description>
+    <label>Buy</label>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>Aguardando</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Executada</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type__c</picklist>
+        <values>
+            <fullName>Buy</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+</RecordType>

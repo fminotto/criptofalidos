@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <interviewLabel>Buscar Cotação {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Buscar Cotação</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>BuscarCotacao</name>
+        <label>Buscar Cotação</label>
+        <locationX>288</locationX>
+        <locationY>310</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Mercado__r.Name</elementReference>
+            </value>
+        </filters>
+        <object>Mercado__c</object>
+        <outputAssignments>
+            <assignToReference>$Record.CotacaoAtual__c</assignToReference>
+            <field>CotacaoAtual__c</field>
+        </outputAssignments>
+    </recordLookups>
+    <startElementReference>BuscarCotacao</startElementReference>
+    <status>Obsolete</status>
+</Flow>
