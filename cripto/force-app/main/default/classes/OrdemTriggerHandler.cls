@@ -7,29 +7,18 @@ public with sharing class OrdemTriggerHandler extends TriggerHandler
         for (Ordem__c o : (List<Ordem__c>)Trigger.New)
         {
             this.verificaSaldo(o);
-            
+            this.validaPreco(o);        
+
             /*Calculo do total*/
             if (o.Total__c != null)
             {
-                if ((o.Quantidade__c != null) && (o.Preco__c != null)){
-                    o.Total__c = o.Quantidade__c * o.Preco__c;
-                }
-                else 
-                {
-                    o.addError('Os valores de quantidade e preço não foram preenchidos');
-                }
+                this.validaQuantidade(o);    
+                o.Total__c = o.Quantidade__c * o.Preco__c;
             }
             // Calculo da quantidade
             else 
             {
-                if (o.Preco__c != null) 
-                {
-                    o.Quantidade__c = o.Total__c / o.Preco__c;
-                }
-                else 
-                {
-                    o.addError('O Preço não foram preenchidos');
-                }            
+                o.Quantidade__c = o.Total__c / o.Preco__c;           
             }
         }
     }
@@ -39,30 +28,39 @@ public with sharing class OrdemTriggerHandler extends TriggerHandler
         for (Ordem__c o : (List<Ordem__c>)Trigger.New)
         {
             this.verificaSaldo(o);
+            this.validaPreco(o);
+            this.validaQuantidade(o);
 
             Ordem__c oOld = (Ordem__c)Trigger.oldMap.get(o.Id);
-            if ((o.Quantidade__c != null) &&
-                (o.Preco__c != null) ) 
-            {
-                o.addError('Quantidade ou Preço não foram preenchidos');
+            /*verifica se o total foi alterado*/
+            if ( (o.Total__c != oOld.Total__c) && 
+                (o.Total__c != o.Quantidade__c * o.Preco__c)){
+                o.addError('O Total não pode ser alterado');
             }
-            else {   
-                /*verifica se o total foi alterado*/
-                if ( (o.Total__c != oOld.Total__c) && 
-                    (o.Total__c != o.Quantidade__c * o.Preco__c)){
-                    o.addError('O Total não pode ser alterado');
-                }
 
-                /*Verifica se mudou a quantidade ou o valor e recalcula o total*/
-                if ((o.Quantidade__c != oOld.Quantidade__c) || 
-                    (o.Preco__c != oOld.Preco__c))
-                {
-                    o.Total__c = o.Quantidade__c * o.Preco__c;
-                }
+            /*Verifica se mudou a quantidade ou o valor e recalcula o total*/
+            if ((o.Quantidade__c != oOld.Quantidade__c) || 
+                (o.Preco__c != oOld.Preco__c))
+            {
+                o.Total__c = o.Quantidade__c * o.Preco__c;
             }
         }
     }
 
+    private void validaPreco(Ordem__c o)
+    {
+        if(o.Preco__c == null) {
+            o.addError('Preço deve ser informado');    
+        }
+    }
+
+    private void validaQuantidade(Ordem__c o)
+    {
+        if(o.Quantidade__c == null) {
+            o.addError('Quantidade deve ser informado');    
+        }
+    }    
+    
     private void verificaSaldo(Ordem__c o)
     {
         if (o.Status__c == 'Executada') {
@@ -83,5 +81,4 @@ public with sharing class OrdemTriggerHandler extends TriggerHandler
             }
         }
     }
-
 }
