@@ -2,7 +2,7 @@
     <aura:attribute name="nome" type="String" Default="World" />
 
     <lightning:card title="Primeiro Componente">
-        <p class="slds-p-horizontal_small">
+        <p class="slds-var-p-horizontal_small">
             <lightning:input name="userName" label="Digite seu nome" value="{! v.nome }" />
             <br />
             <!-- Brand variant: Identifies the primary action in a group of buttons -->

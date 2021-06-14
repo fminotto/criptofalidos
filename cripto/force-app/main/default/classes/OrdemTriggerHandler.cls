@@ -1,5 +1,8 @@
 public with sharing class OrdemTriggerHandler extends TriggerHandler
 {
+
+    List<Ativo_da_Carteira__c> ativosCarteiras;
+
     public OrdemTriggerHandler() {}
 
     protected override void beforeInsert()
@@ -10,7 +13,7 @@ public with sharing class OrdemTriggerHandler extends TriggerHandler
             this.validaPreco(o);        
 
             /*Calculo do total*/
-            if (o.Total__c != null)
+            if (o.Total__c == null)
             {
                 this.validaQuantidade(o);    
                 o.Total__c = o.Quantidade__c * o.Preco__c;
@@ -33,7 +36,7 @@ public with sharing class OrdemTriggerHandler extends TriggerHandler
 
             Ordem__c oOld = (Ordem__c)Trigger.oldMap.get(o.Id);
             /*verifica se o total foi alterado*/
-            if ( (o.Total__c != oOld.Total__c) && 
+            if ( ((oOld.Total__c != null) && (o.Total__c != oOld.Total__c)) && 
                 (o.Total__c != o.Quantidade__c * o.Preco__c)){
                 o.addError('O Total não pode ser alterado');
             }
@@ -64,21 +67,26 @@ public with sharing class OrdemTriggerHandler extends TriggerHandler
     private void verificaSaldo(Ordem__c o)
     {
         if (o.Status__c == 'Executada') {
-            List<Ativo_da_Carteira__c> a = new List<Ativo_da_Carteira__c>();
-            decimal Quantidade = 0;
-            if (o.Type__c == 'Buy') {
-                a = [select id, saldo__c from Ativo_da_Carteira__c where Name = :o.MoedaSecundaria__c and Carteira__c = :o.Carteira__c];
-                Quantidade = o.Total__c;
-            } else {
-                a = [select id, saldo__c from Ativo_da_Carteira__c where Name = :o.MoedaPrimaria__c and Carteira__c = :o.Carteira__c];
-                Quantidade = o.Quantidade__c;
+            if ((this.ativosCarteiras == null)||(this.ativosCarteiras.size() == 0)) {
+                this.ativosCarteiras = [select Carteira__c, Name, saldo__c from Ativo_da_Carteira__c];
             }
             
-            if(!a.isEmpty()) {
-                if (a[0].Saldo__c - Quantidade < 0) {
-                    o.addError('Saldo Insuficiente.');
-                }  
+            decimal quantidade = ((o.Type__c == 'Buy') ? o.Total__c : o.Quantidade__c);
+            decimal saldo = getSaldoMoedaCarteira(((o.Type__c == 'Buy') ? o.MoedaSecundaria__c : o.MoedaPrimaria__c), o.Carteira__c);
+            if (saldo - quantidade < 0) {
+                o.addError('Saldo Insuficiente.');
+            }  
+        }
+    }
+
+    private decimal getSaldoMoedaCarteira(String moeda, id carteira) {
+        decimal saldo = 0;
+        for (Ativo_da_Carteira__c ativoCarteira : this.ativosCarteiras) {
+            if ((ativoCarteira.Name == moeda) && (ativoCarteira.Carteira__c == carteira)) {
+                saldo = ativoCarteira.saldo__c;
+                break;
             }
         }
+        return saldo;
     }
 }

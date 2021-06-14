@@ -3,12 +3,12 @@
         <lightning:card title="Negociar">
             <lightning:tabset>
                 <lightning:tab label="Comprar">
-                    <p class="slds-p-horizontal_small">
+                    <p class="slds-var-p-horizontal_small">
                         Comprar
                     </p>
                 </lightning:tab>
                 <lightning:tab label="Vender">
-                    <p class="slds-p-horizontal_small">
+                    <p class="slds-var-p-horizontal_small">
                         Vender
                     </p>
                 </lightning:tab>
