@@ -6,10 +6,10 @@ public class OrdemTest {
         insert account;
         Carteira__c carteira = new Carteira__c(Conta__c = account.id);
         insert carteira;
-        Ativo_da_Carteira__c ativo_carteira1 = new Ativo_da_Carteira__c(Name='TADA', Carteira__c = carteira.Id);
-        insert ativo_carteira1;
-        Ativo_da_Carteira__c ativo_carteira2 = new Ativo_da_Carteira__c(Name='TBRL', Carteira__c = carteira.Id);
-        insert ativo_carteira2;
+        Ativo_da_Carteira__c ativoCarteira1 = new Ativo_da_Carteira__c(Name='TADA', Carteira__c = carteira.Id);
+        insert ativoCarteira1;
+        Ativo_da_Carteira__c ativoCarteira2 = new Ativo_da_Carteira__c(Name='TBRL', Carteira__c = carteira.Id);
+        insert ativoCarteira2;
         Moeda__c moedaPrimaria = new Moeda__c(Name='TADA');
         Moeda__c moedaSecundaria = new Moeda__c(Name='TBRL');
         insert moedaPrimaria;
@@ -18,7 +18,7 @@ public class OrdemTest {
         insert mercado;        
     }
     
-    @isTest static void InsereOrdemSemTotal() {
+    @isTest static void insereOrdemSemTotal() {
         Mercado__c mercado = [SELECT Id FROM Mercado__c WHERE Name='TADA/TBRL' LIMIT 1];
         Carteira__c carteira = [SELECT Id FROM Carteira__c Order By Name desc LIMIT 1];
         Ordem__c ordem = new Ordem__c(Status__c='Aguardando', Type__c='Buy', Quantidade__c=1, Preco__c=10, Mercado__c=mercado.Id, Carteira__c=carteira.Id);
@@ -30,7 +30,7 @@ public class OrdemTest {
         System.assert(result.isSuccess());
     } 
     
-    @isTest static void InsereOrdemSemQuantidade() {
+    @isTest static void insereOrdemSemQuantidade() {
         Mercado__c mercado = [SELECT Id FROM Mercado__c WHERE Name='TADA/TBRL' LIMIT 1];
         Carteira__c carteira = [SELECT Id FROM Carteira__c Order By Name desc LIMIT 1];
         Ordem__c ordem = new Ordem__c(Status__c='Aguardando', Type__c='Buy', Total__c=100, Preco__c=10, Mercado__c=mercado.Id, Carteira__c=carteira.Id);
@@ -42,7 +42,7 @@ public class OrdemTest {
         System.assert(result.isSuccess());
     }
     
-    @isTest static void InsereOrdemSemQuantidadeeTotal() {
+    @isTest static void insereOrdemSemQuantidadeeTotal() {
         Mercado__c mercado = [SELECT Id FROM Mercado__c WHERE Name='TADA/TBRL' LIMIT 1];
         Carteira__c carteira = [SELECT Id FROM Carteira__c Order By Name desc LIMIT 1];
         Ordem__c ordem = new Ordem__c(Status__c='Aguardando', Type__c='Buy', Preco__c=10, Mercado__c=mercado.Id, Carteira__c=carteira.Id);
@@ -54,7 +54,7 @@ public class OrdemTest {
         System.assert(!result.isSuccess());
     }
 
-    @isTest static void InsereOrdemSemPreco() {
+    @isTest static void insereOrdemSemPreco() {
         Mercado__c mercado = [SELECT Id FROM Mercado__c WHERE Name='TADA/TBRL' LIMIT 1];
         Carteira__c carteira = [SELECT Id FROM Carteira__c Order By Name desc LIMIT 1];
         Ordem__c ordem = new Ordem__c(Status__c='Aguardando', Type__c='Buy', Total__c=100, Quantidade__c=10, Mercado__c=mercado.Id, Carteira__c=carteira.Id);
@@ -66,7 +66,7 @@ public class OrdemTest {
         System.assert(!result.isSuccess());
     }
     
-    @isTest static void AlterarTotal() {
+    @isTest static void alterarTotal() {
         Mercado__c mercado = [SELECT Id FROM Mercado__c WHERE Name='TADA/TBRL' LIMIT 1];
         Carteira__c carteira = [SELECT Id FROM Carteira__c Order By Name desc LIMIT 1];
         Ordem__c ordem = new Ordem__c(Status__c='Aguardando', Type__c='Buy', Total__c=100, Quantidade__c=10, Preco__c=1, Mercado__c=mercado.Id, Carteira__c=carteira.Id);
@@ -81,7 +81,7 @@ public class OrdemTest {
         System.assert(!result.isSuccess());
     }
     
-    @isTest static void IncluiOrdemSemSaldo() {
+    @isTest static void incluiOrdemExecutadaSemSaldo() {
         Mercado__c mercado = [SELECT Id FROM Mercado__c WHERE Name='TADA/TBRL' LIMIT 1];
         Carteira__c carteira = [SELECT Id FROM Carteira__c Order By Name desc LIMIT 1];
         Ordem__c ordemCompra = new Ordem__c(Status__c='Executada', Type__c='Buy', Total__c = 10, Quantidade__c=1, Preco__c=10, Mercado__c=mercado.Id, Carteira__c=carteira.Id);
