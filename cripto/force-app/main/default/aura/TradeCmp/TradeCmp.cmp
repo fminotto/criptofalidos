@@ -1,14 +1,33 @@
-<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="BinanceAPI">
+    <aura:attribute name="opMercado" type="Boolean" default="true" />
+    <aura:attribute name="price" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.retrivePrice}" />
+
     <div class="slds-box slds-theme_default">
-        <lightning:card title="Negociar">
+        <lightning:card title="{! 'Negociar - Cotação Atual: ' + v.price}" iconName="standard:partner_marketing_budget">
+            <aura:set attribute="actions">
+                <lightning:button label="Atualizar" onclick="{! c.retrivePrice }" />
+            </aura:set>
             <lightning:tabset>
                 <lightning:tab label="Comprar">
                     <p class="slds-var-p-horizontal_small">
-                        Comprar
+                        <lightning:recordEditForm objectApiName="Ordem__c" onsubmit="{!c.handlerOrder}">
+                            <lightning:messages />
+                            <lightning:inputField fieldName="OperacaoMercado__c" onchange="{!c.handleChange}" />
+                            <lightning:inputField fieldName="Carteira__c" />
+                            <lightning:inputField fieldName="Quantidade__c" />
+                            <lightning:inputField fieldName="Preco__c" readonly="{! !v.opMercado}" />
+                            <aura:if isTrue="{!v.opMercado} ">
+                                <lightning:inputField fieldName="ValidadeOrdem__c" />
+                            </aura:if>
+                            <lightning:inputField fieldName="Total__c " />
+                            <lightning:button type="submit " name="Comprar " label="Comprar " class="slds-m-top_medium " />
+                        </lightning:recordEditForm>
                     </p>
                 </lightning:tab>
-                <lightning:tab label="Vender">
-                    <p class="slds-var-p-horizontal_small">
+                <lightning:tab label="Vender ">
+                    <p class="slds-var-p-horizontal_small ">
                         Vender
                     </p>
                 </lightning:tab>
