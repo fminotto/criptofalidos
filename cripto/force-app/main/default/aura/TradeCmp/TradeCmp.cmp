@@ -1,8 +1,14 @@
-<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="BinanceAPI">
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="BinanceApi">
     <aura:attribute name="opMercado" type="Boolean" default="true" />
-    <aura:attribute name="price" type="String" />
+    <aura:attribute name="price" type="double" />
+    <aura:attribute name="priceOrder" type="double" default="0" />
+    <aura:attribute name="quantidade" type="double" default="0" />
+    <aura:attribute name="total" type="double" default="0" />
+    <aura:attribute name="data" type="DateTime" />
     <aura:attribute name="recordId" type="String" />
     <aura:handler name="init" value="{!this}" action="{!c.retrivePrice}" />
+
+    <aura:registerEvent name="OrdemEvent" type="c:OrdemEvent" />
 
     <div class="slds-box slds-theme_default">
         <lightning:card title="{! 'Negociar - Cotação Atual: ' + v.price}" iconName="standard:partner_marketing_budget">
@@ -12,23 +18,38 @@
             <lightning:tabset>
                 <lightning:tab label="Comprar">
                     <p class="slds-var-p-horizontal_small">
-                        <lightning:recordEditForm objectApiName="Ordem__c" onsubmit="{!c.handlerOrder}">
+                        <lightning:recordEditForm objectApiName="Ordem__c" onsubmit="{!c.handleOrder}" onsuccess="{!c.handleSuccess}" aura:id="BuyForm">
                             <lightning:messages />
+                            <lightning:inputField fieldName="Mercado__c" value="{! v.recordId}" disabled="true" style="display:none" />
                             <lightning:inputField fieldName="OperacaoMercado__c" onchange="{!c.handleChange}" />
-                            <lightning:inputField fieldName="Carteira__c" />
-                            <lightning:inputField fieldName="Quantidade__c" />
-                            <lightning:inputField fieldName="Preco__c" readonly="{! !v.opMercado}" />
-                            <aura:if isTrue="{!v.opMercado} ">
-                                <lightning:inputField fieldName="ValidadeOrdem__c" />
+                            <lightning:inputField fieldName="Type__c" value="Buy" style="display:none" />
+                            <lightning:inputField fieldName="Carteira__c" aura:id="ordField" />
+                            <lightning:inputField fieldName="Quantidade__c" value="{!v.quantidade}" onkeyup="{!c.handleQuantidadePrecoChange}" aura:id="ordField" />
+                            <lightning:inputField fieldName="Preco__c" value="{!v.priceOrder}" disabled="{! !v.opMercado}" onkeyup="{!c.handleQuantidadePrecoChange}" />
+                            <lightning:inputField fieldName="Total__c" value="{!v.total}" onkeyup="{!c.handleTotalChange}" aura:id="ordField" />
+                            <aura:if isTrue="{!v.opMercado}">
+                                <lightning:inputField fieldName="ValidadeOrdem__c" value="{!v.data}" aura:id="ordField" />
                             </aura:if>
-                            <lightning:inputField fieldName="Total__c " />
-                            <lightning:button type="submit " name="Comprar " label="Comprar " class="slds-m-top_medium " />
+                            <lightning:button type="submit" name="submit" label="Comprar" class="slds-m-top_medium" />
                         </lightning:recordEditForm>
                     </p>
                 </lightning:tab>
-                <lightning:tab label="Vender ">
-                    <p class="slds-var-p-horizontal_small ">
-                        Vender
+                <lightning:tab label="Vender">
+                    <p class="slds-var-p-horizontal_small">
+                        <lightning:recordEditForm objectApiName="Ordem__c" onsubmit="{!c.handleOrder}" onsuccess="{!c.handleSuccess}" aura:id="SellForm">
+                            <lightning:messages />
+                            <lightning:inputField fieldName="Mercado__c" value="{! v.recordId}" disabled="true" style="display:none" />
+                            <lightning:inputField fieldName="OperacaoMercado__c" onchange="{!c.handleChange}" />
+                            <lightning:inputField fieldName="Type__c" value="Sell" style="display:none" />
+                            <lightning:inputField fieldName="Carteira__c" aura:id="ordField" />
+                            <lightning:inputField fieldName="Quantidade__c" value="{!v.quantidade}" onkeyup="{!c.handleQuantidadePrecoChange}" aura:id="ordField" />
+                            <lightning:inputField fieldName="Preco__c" value="{!v.priceOrder}" disabled="{! !v.opMercado}" onkeyup="{!c.handleQuantidadePrecoChange}" />
+                            <lightning:inputField fieldName="Total__c" value="{!v.total}" onkeyup="{!c.handleTotalChange}" aura:id="ordField" />
+                            <aura:if isTrue="{!v.opMercado}">
+                                <lightning:inputField fieldName="ValidadeOrdem__c" value="{!v.data}" aura:id="ordField" />
+                            </aura:if>
+                            <lightning:button type="submit" name="submit" label="Vender" class="slds-m-top_medium" />
+                        </lightning:recordEditForm>
                     </p>
                 </lightning:tab>
             </lightning:tabset>

@@ -54,6 +54,21 @@ public class OrdemTest {
         System.assert(!result.isSuccess());
     }
 
+    
+    @isTest static void insereOrdemSemQuantidadeePreco() {
+        Mercado__c mercado = [SELECT Id FROM Mercado__c WHERE Name='TADA/TBRL' LIMIT 1];
+        Carteira__c carteira = [SELECT Id FROM Carteira__c Order By Name desc LIMIT 1];
+        Ordem__c ordem = new Ordem__c(Status__c='Aguardando', Type__c='Buy', Total__c = 10, Preco__c=0, Quantidade__c=0, Mercado__c=mercado.Id, Carteira__c=carteira.Id);
+        // Perform test
+        Test.startTest();
+        Database.SaveResult result = Database.insert(ordem, false);
+        Test.stopTest();
+
+        system.debug(result);
+        System.assert(result.isSuccess());
+        System.assertEquals('Quantidade deve ser informado', result.getErrors()[0].getMessage());
+    }
+
     @isTest static void insereOrdemSemPreco() {
         Mercado__c mercado = [SELECT Id FROM Mercado__c WHERE Name='TADA/TBRL' LIMIT 1];
         Carteira__c carteira = [SELECT Id FROM Carteira__c Order By Name desc LIMIT 1];
