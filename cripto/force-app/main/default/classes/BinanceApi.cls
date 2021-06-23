@@ -33,8 +33,7 @@ public with sharing class BinanceApi {
         }
     }
 
-    @future (callout=true)
-    public static void getPrice(){
+    public static List<SymbolPrice> getPrice(){
         try {
             Http http = new Http();
             HttpRequest request = new HttpRequest();
@@ -43,24 +42,10 @@ public with sharing class BinanceApi {
             HttpResponse response = http.send(request);
             if (response.getStatusCode() == 200) {
                 List<SymbolPrice> spList = (List<SymbolPrice>)JSON.deserialize(response.getBody(), List<SymbolPrice>.class);
-        
-                Map<String, decimal> priceMap = new Map<String, decimal>();
-                for(BinanceApi.SymbolPrice sp : spList){
-                    priceMap.put(sp.symbol, sp.price);
-                }
-                
-                List<Historico_de_Precos__c> historicoList = new List<Historico_de_Precos__c>();
-                for(Mercado__c mercado : [SELECT ID, Pair__c 
-                                                  FROM Mercado__c 
-                                                 WHERE Ativo__c = true 
-                                                   AND Pair__c in :priceMap.keySet()]){
-                    historicoList.add(new Historico_de_Precos__c(Mercado__c = mercado.Id, Preco__c = priceMap.get(mercado.Pair__c)));
-                }
-
-                if(historicoList.size()>0){
-                    insert historicoList;
-                }  
-            }             
+                return spList;
+            }  else {
+                return null;
+            }           
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
