@@ -52,7 +52,7 @@ public with sharing class BinanceApi {
     }
 
     public Class SymbolPrice{
-        public String symbol;
-        public decimal price;
+        public String symbol {get; set;}
+        public decimal price {get; set;}
     }
 }
