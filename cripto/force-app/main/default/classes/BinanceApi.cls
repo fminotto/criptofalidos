@@ -9,7 +9,7 @@ public with sharing class BinanceApi {
     }
 
     @AuraEnabled
-    public static String getPrice(String mercadoId){
+    public static String getPricePair(String mercadoId){
         try {
             Mercado__c mercado = [SELECT id, MoedaPrimaria__c, MoedaSecundaria__c from Mercado__c where id = :mercadoId];
             Moeda__c moedaPrimaria = [select Name from Moeda__c where id = :mercado.MoedaPrimaria__c];
@@ -24,7 +24,8 @@ public with sharing class BinanceApi {
             if (response.getStatusCode() == 200) {
                 system.debug(response.getBody());
                 SymbolPrice sp = (SymbolPrice)JSON.deserialize(response.getBody(), SymbolPrice.class);
-                return String.valueOf(sp.price);
+            
+                return sp.price;
             } else {
                 return 'Erro ao acessar a API do Binance';
             }
@@ -33,6 +34,7 @@ public with sharing class BinanceApi {
         }
     }
 
+    @AuraEnabled(cacheable=true)
     public static List<SymbolPrice> getPrice(){
         try {
             Http http = new Http();
@@ -42,6 +44,7 @@ public with sharing class BinanceApi {
             HttpResponse response = http.send(request);
             if (response.getStatusCode() == 200) {
                 List<SymbolPrice> spList = (List<SymbolPrice>)JSON.deserialize(response.getBody(), List<SymbolPrice>.class);
+                
                 return spList;
             }  else {
                 return null;
@@ -51,8 +54,24 @@ public with sharing class BinanceApi {
         }
     }
 
+
+    @AuraEnabled(cacheable=true)
+    public static List<SymbolPrice> getPriceFiltered(String searchKey){
+        List<SymbolPrice> assetList = getPrice();
+        List<SymbolPrice> assetListResponse = new List<SymbolPrice>();
+        for(SymbolPrice asset : assetList){
+            if(asset.symbol.startsWithIgnoreCase(searchKey)){
+                assetListResponse.add(asset);
+            }
+        }
+
+        return assetListResponse;
+    }
+    
     public Class SymbolPrice{
+        @AuraEnabled
         public String symbol {get; set;}
-        public decimal price {get; set;}
+        @AuraEnabled
+        public String price {get; set;}
     }
 }
